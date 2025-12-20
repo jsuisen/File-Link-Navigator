@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<idea-plugin>
+  <id>com.saysawgames.filelinknavigator</id>
+  <name>File Link Navigator</name>
+  <vendor email="saysawgames@qq.com" url="http://saysawgames.com">SaysawGames</vendor>
+  <description><![CDATA[
+<p>
+  In Java code comments, you can link to any line in any text file (e.g., a Markdown file) within the project by using a special format.<br>
+  It supports hovering, Ctrl+Click, or keyboard shortcuts to jump to the specified line in the target file.<br>
+  Custom configurations are available in the settings page.
+</p>
+<p>
+  在 Java 代码注释中，通过特殊格式即可链接到项目内任意文本文件（例如 Markdown 文件）的指定行，<br>
+  支持鼠标悬停、或 Ctrl+Click 、或快捷键跳转到指定文件的指定行号。<br>
+  支持在设置页面中进行自定义配置。
+</p>
+<p>Example:/示例：</p>
+<pre><code>
+// @doc file.txt:25
+/* @markdown docs/README.md#L42 */
+/**
+ * note
+ * @see test.md:30
+ */
+</code></pre>
+    ]]></description>
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.java</depends>
+  <!--  <depends>com.intellij.modules.rider</depends>-->
+  <!--  <depends>org.intellij.plugins.markdown</depends>-->
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- 注解器：提供视觉效果和 Alt+Enter 快速修复 -->
+    <annotator language="JAVA"
+               implementationClass="com.saysawgames.filelinknavigator.DocLinkAnnotator"/>
+    <annotator language="CSharp"
+               implementationClass="com.saysawgames.filelinknavigator.DocLinkAnnotator"/>
+    <!-- 引用贡献者：支持 Ctrl+点击跳转 -->
+    <psi.referenceContributor
+      implementation="com.saysawgames.filelinknavigator.DocLinkReferenceContributor"/>
+    <!-- 设置页面 -->
+    <applicationConfigurable
+      displayName="File Link Navigator"
+      implementation="com.saysawgames.filelinknavigator.settings.SettingsPage"/>
+
+    <!-- 注册应用级别服务 - 修正位置 -->
+    <applicationService
+      serviceImplementation="com.saysawgames.filelinknavigator.settings.SettingsState"/>
+  </extensions>
+
+  <actions>
+    <!-- 可选：添加右键菜单动作 -->
+    <action id="DocLink.InsertLink"
+            class="com.saysawgames.filelinknavigator.InsertDocLinkAction"
+            text="Insert File Link"
+            description="Insert a link to a file">
+      <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+    </action>
+  </actions>
+</idea-plugin>

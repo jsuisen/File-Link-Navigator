@@ -1,0 +1,78 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '1.17.4'
+}
+
+group = 'com.saysawgames'
+version = '0.9.0'
+
+repositories {
+    mavenCentral()
+}
+
+// 指定 Gradle 使用的 Java 版本（降低版本以提高兼容性）
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.encoding = "UTF-8"
+            //options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+            options.compilerArgs << "-nowarn"
+        }
+    }
+}
+
+intellij {
+    // 使用用户本地已安装的IntelliJ版本，避免下载
+    localPath = 'D:/Program Files/JetBrains/IntelliJ IDEA Community Edition 2025.1.3'
+//    version = '2025.1.3'
+    type = 'IC' // IntelliJ IDEA Community Edition
+    plugins = ['java', 'org.intellij.plugins.markdown']
+    // 关键配置：强制使用与sinceBuild兼容的API
+    downloadSources = false
+    //downloadJavadoc = false
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+tasks {
+    buildSearchableOptions {
+        enabled = false
+    }
+
+    patchPluginXml {
+        changeNotes.set("""
+        <h3>0.9.0</h3>
+        <ul>
+            <li>fist commit</li>
+        </ul>
+        """)
+        sinceBuild.set("232") // 2023.2 是 Java 17 兼容的最早版本
+        untilBuild.set("251.*")
+    }
+
+}
+
+tasks.withType(JavaExec) {
+    jvmArgs '-Dfile.encoding=UTF-8'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(JavaCompile).tap {
+    configureEach {
+        options.encoding = "UTF-8"
+        //options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        options.compilerArgs << "-nowarn"
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
